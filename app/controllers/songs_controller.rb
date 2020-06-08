@@ -25,7 +25,21 @@ class SongsController < ApplicationController
   end
 
   def new
-    @song = Song.new
+    # Circumstances to call new
+    # 1. Calling directly from songs/new
+    # 2. Calling from nested artists/1/songs/new + should validate artist
+    #   - if Artist is found assign artist_id to new song
+    #   - if the artist isn't found redirect to artists_index 
+    # Calling from nested artists
+    if params[:artist_id]
+      if Artist.find_by(id: params[:artist_id])
+        @song = Song.new(artist_id: params[:artist_id])
+      else
+        redirect_to artists_path
+      end
+    else
+      @song = Song.new
+    end
   end
 
   def create
@@ -39,7 +53,27 @@ class SongsController < ApplicationController
   end
 
   def edit
-    @song = Song.find(params[:id])
+    
+    
+
+    # does the artist exist
+    if params[:artist_id]
+      artist = Artist.find_by(id: params[:artist_id])
+      if artist.nil?
+        redirect_to artists_path, alert: "Artist Not Found"
+      else
+        @song = artist.songs.find_by(id: params[:id])
+        @artists = Artist.all
+        redirect_to artist_songs_path(artist), alert: "Song not found" if @song.nil?
+      end
+    else
+      @artists = Artist.all
+      @song = Song.find_by(id: params[:id])
+    end
+
+
+    # Put this in when we are sure we will need it fired
+    
   end
 
   def update
@@ -64,7 +98,7 @@ class SongsController < ApplicationController
   private
 
   def song_params
-    params.require(:song).permit(:title, :artist_name)
+    params.require(:song).permit(:title, :artist_name, :artist_id)
   end
 end
 

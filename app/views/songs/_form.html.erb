@@ -1,8 +1,18 @@
 <%= form_for @song  do |f| %>
   <%= f.label :title %>
-  <%= f.text_field :title %><br>
-  <%= f.label :artist_name %>
-  <%= f.text_field :artist_name %>
+  <%= f.text_field :title %>
+  <br>
+
+  <%= artist_select(@artists, f) if !params[:artist_id] %>
+  <br>
+<%# SHOWS ONLY IF ACCESSED FROM songs/:id/edit %>
+  <% if !params[:artist_id] %>
+	  <%= f.label :artist_name, "Or Create New Artist:" %>
+	  <%= f.text_field :artist_name %>
+  <% end %>
+
+<%# populates only if accessted from artists/:artist_id/songs/:song_id/id %>
+  <%= f.hidden_field :artist_id if params[:artist_id] %>
   <br />
 
   <%= f.submit %>
