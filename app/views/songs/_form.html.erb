@@ -3,7 +3,7 @@
   <%= f.text_field :title %>
   <br>
 
-  <%= artist_select(@artists) if !params[:artist_id] %>
+  <%= artist_select(@artists, f) if !params[:artist_id] %>
   <br>
 <%# SHOWS ONLY IF ACCESSED FROM songs/:id/edit %>
   <% if !params[:artist_id] %>
